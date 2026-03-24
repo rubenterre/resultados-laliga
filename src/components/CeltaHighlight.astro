@@ -53,15 +53,15 @@ const isFinished = homeScore !== null && awayScore !== null;
           height="48"
           class="celta-match__logo"
         />
-        <span class="celta-match__name">{homeTeam.shortName}</span>
+        <span class="celta-match__name">{homeTeam.name}</span>
       </div>
 
       <div class="celta-match__score">
         {isFinished ? (
           <>
-            <span class={`celta-match__number ${homeTeam.shortName === "CEL" ? "celta-match__number--celta" : ""}`}>{homeScore}</span>
+            <span class={`celta-match__number ${homeTeam.name.includes("Celta") ? "celta-match__number--celta" : ""}`}>{homeScore}</span>
             <span class="celta-match__divider">-</span>
-            <span class={`celta-match__number ${awayTeam.shortName === "CEL" ? "celta-match__number--celta" : ""}`}>{awayScore}</span>
+            <span class={`celta-match__number ${awayTeam.name.includes("Celta") ? "celta-match__number--celta" : ""}`}>{awayScore}</span>
           </>
         ) : (
           <span class="celta-match__vs">vs</span>
@@ -76,7 +76,7 @@ const isFinished = homeScore !== null && awayScore !== null;
           height="48"
           class="celta-match__logo"
         />
-        <span class="celta-match__name">{awayTeam.shortName}</span>
+        <span class="celta-match__name">{awayTeam.name}</span>
       </div>
     </div>
 
@@ -109,6 +109,7 @@ const isFinished = homeScore !== null && awayScore !== null;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    width: 140px;
   }
 
   .celta-match__logo {
@@ -133,6 +134,11 @@ const isFinished = homeScore !== null && awayScore !== null;
     font-weight: 600;
     color: var(--color-text-soft);
     letter-spacing: 0.08em;
+    max-width: 120px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .celta-match__score {

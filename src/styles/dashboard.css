@@ -96,12 +96,12 @@ button {
 
 /* Panel principal tipo “glass dashboard” */
 .dashboard-panel {
-  background: rgba(5, 11, 16, 0.9);
+/*   background: rgba(5, 11, 16, 0.9);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border-soft);
   box-shadow: var(--shadow-deep);
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px); */
   padding: 1.5rem 1.75rem 1.75rem;
   display: flex;
   flex-direction: column;
