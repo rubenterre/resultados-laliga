@@ -20,6 +20,8 @@ const {
     minute: "2-digit",
   }),
 } = Astro.props;
+
+import Footer from '../components/Footer.astro';
 ---
 
 <!DOCTYPE html>
@@ -63,6 +65,7 @@ const {
           <main id="main-content">
             <slot />
           </main>
+            <Footer/>
         </div>
       </div>
     </div>
