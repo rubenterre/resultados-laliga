@@ -124,4 +124,11 @@ const { matches, title, subtitle, jornada } = Astro.props;
   .match-team--celta .match-team__logo {
     background: rgba(138, 195, 238, 0.15);
   }
+
+  @media (max-width: 425px) {
+    .match-list th:last-child,
+    .match-list td:last-child {
+      display: none;
+    }
+  }
 </style>
