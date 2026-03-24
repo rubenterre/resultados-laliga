@@ -66,23 +66,28 @@ try {
   const finishedMatches = apiData.matches.filter(m => m.status === 'FINISHED');
   const scheduledMatches = apiData.matches.filter(m => m.status === 'SCHEDULED' || m.status === 'TIMED');
 
-  const lastMatchday = finishedMatches.length > 0 ? finishedMatches[0].matchday : null;
+  const celtaMatches = apiData.matches.filter(m => 
+    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
+  );
+  const celtaFinishedMatches = celtaMatches.filter(m => m.status === 'FINISHED');
+  const celtaScheduledMatches = celtaMatches.filter(m => m.status === 'SCHEDULED' || m.status === 'TIMED');
+  
+  const celtaLastMatch = celtaFinishedMatches.length > 0 ? celtaFinishedMatches[celtaFinishedMatches.length - 1] : null;
+  const celtaNextMatch = celtaScheduledMatches.length > 0 ? celtaScheduledMatches[0] : null;
+
+  const jornadas = [...new Set(finishedMatches.map(m => m.matchday))].sort((a, b) => b - a);
+  const lastMatchday = jornadas[0] || null;
+  const jornadaAnteriorReal = jornadas[1] || null;
   const nextMatchday = scheduledMatches.length > 0 ? scheduledMatches[0].matchday : null;
 
   const lastMatches = apiData.matches.filter(m => m.matchday === lastMatchday);
+  const jornadaAnteriorMatches = jornadaAnteriorReal ? apiData.matches.filter(m => m.matchday === jornadaAnteriorReal) : [];
   const nextMatches = apiData.matches.filter(m => m.matchday === nextMatchday);
 
-  const celtaLastMatch = lastMatches.find(m => 
-    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
-  );
-  const celtaNextMatch = nextMatches.find(m => 
-    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
-  );
-
   data = {
-    jornada: lastMatchday,
+    jornada: jornadaAnteriorReal || lastMatchday,
     jornadaSiguiente: nextMatchday,
-    partidos: lastMatches.map(formatMatch),
+    partidos: jornadaAnteriorMatches.length > 0 ? jornadaAnteriorMatches.map(formatMatch) : lastMatches.map(formatMatch),
     proximosPartidos: nextMatches.map(formatMatch),
     celta: {
       ultimo: celtaLastMatch ? formatMatch(celtaLastMatch) : null,
@@ -94,7 +99,7 @@ try {
   error = e.message;
 }
 
-const jornadaActual = data?.jornada?.toString() || '28';
+const jornadaActual = data?.jornada?.toString() || data?.jornadaSiguiente ? (data.jornadaSiguiente - 1).toString() : '28';
 const temporada = '2025-2026';
 
 const celtaUltimo = data?.celta?.ultimo;
