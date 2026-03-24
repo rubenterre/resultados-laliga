@@ -52,7 +52,7 @@ const { matches, title, subtitle, jornada } = Astro.props;
           <td>
             <div class={`match-team ${match.home.isCelta ? "match-team--celta" : ""}`}>
               <img
-                src={`/logos/${match.home.shortName.toLowerCase()}.svg`}
+                src={`/logos/${match.home.shortName.toLowerCase()}.png`}
                 alt=""
                 width="20"
                 height="20"
@@ -75,7 +75,7 @@ const { matches, title, subtitle, jornada } = Astro.props;
           <td>
             <div class={`match-team ${match.away.isCelta ? "match-team--celta" : ""}`}>
               <img
-                src={`/logos/${match.away.shortName.toLowerCase()}.svg`}
+                src={`/logos/${match.away.shortName.toLowerCase()}.png`}
                 alt=""
                 width="20"
                 height="20"

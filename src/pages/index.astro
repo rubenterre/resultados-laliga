@@ -17,18 +17,43 @@ function slugify(name) {
     .replace(/^-|-$/g, '');
 }
 
+function getTeamLogo(teamName) {
+  const name = teamName.toLowerCase();
+  if (name.includes('celta')) return 'celta';
+  if (name.includes('barcelona') || name.includes('fc barcelona')) return 'barcelona';
+  if (name.includes('real madrid')) return 'real-madrid';
+  if (name.includes('atlético') || name.includes('atletico')) return 'atletico';
+  if (name.includes('sevilla')) return 'sevilla';
+  if (name.includes('betis')) return 'betis';
+  if (name.includes('real sociedad')) return 'real-sociedad';
+  if (name.includes('villarreal')) return 'villarreal';
+  if (name.includes('athletic')) return 'athletic';
+  if (name.includes('valencia')) return 'valencia';
+  if (name.includes('osasuna')) return 'osasuna';
+  if (name.includes('rayo')) return 'rayo';
+  if (name.includes('alavés') || name.includes('alaves')) return 'alaves';
+  if (name.includes('espanyol')) return 'espanyol';
+  if (name.includes('elche')) return 'elche';
+  if (name.includes('getafe')) return 'getafe';
+  if (name.includes('mallorca')) return 'mallorca';
+  if (name.includes('levante')) return 'levante';
+  if (name.includes('oviedo')) return 'oviedo';
+  if (name.includes('girona')) return 'girona';
+  return slugify(teamName);
+}
+
 function formatMatch(m) {
   const isCelta = m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID;
   return {
     id: m.id,
     home: {
       name: m.homeTeam.name,
-      shortName: slugify(m.homeTeam.name),
+      shortName: getTeamLogo(m.homeTeam.name),
       isCelta: m.homeTeam.id === CELTA_ID
     },
     away: {
       name: m.awayTeam.name,
-      shortName: slugify(m.awayTeam.name),
+      shortName: getTeamLogo(m.awayTeam.name),
       isCelta: m.awayTeam.id === CELTA_ID
     },
     homeScore: m.score?.fullTime?.home ?? null,
