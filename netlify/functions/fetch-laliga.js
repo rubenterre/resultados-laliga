@@ -1,7 +1,7 @@
 const API_TOKEN = process.env.FOOTBALL_API_TOKEN;
 const API_BASE = 'https://api.football-data.org/v4';
 const LALIGA_CODE = 'PD';
-const CELTA_ID = 564;
+const CELTA_ID = 558;
 
 async function fetchWithAuth(url) {
   const response = await fetch(url, {

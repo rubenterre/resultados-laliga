@@ -59,7 +59,7 @@ async function fetchLaLigaData() {
   const lastMatches = data.matches.filter(m => m.matchday === lastMatchday);
   const nextMatches = data.matches.filter(m => m.matchday === nextMatchday);
 
-  const celtaId = 564;
+  const celtaId = 558;
   const celtaLastMatch = lastMatches.find(m => 
     m.homeTeam.id === celtaId || m.awayTeam.id === celtaId
   );
