@@ -1,6 +1,7 @@
 const API_TOKEN = process.env.FOOTBALL_API_TOKEN;
 const API_BASE = 'https://api.football-data.org/v4';
 const LALIGA_CODE = 'PD';
+const CELTA_ID = 564;
 
 async function fetchWithAuth(url) {
   const response = await fetch(url, {
@@ -12,16 +13,37 @@ async function fetchWithAuth(url) {
   return response.json();
 }
 
-async function getLastFinishedMatchday(matches) {
-  const finished = matches.filter(m => m.status === 'FINISHED');
-  if (finished.length === 0) return null;
-  return finished[0].matchday;
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
-async function getNextMatchday(matches) {
-  const scheduled = matches.filter(m => m.status === 'SCHEDULED');
-  if (scheduled.length === 0) return null;
-  return scheduled[0].matchday;
+function formatMatch(m) {
+  const isCelta = m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID;
+  return {
+    id: m.id,
+    home: {
+      name: m.homeTeam.name,
+      shortName: slugify(m.homeTeam.name),
+      isCelta: m.homeTeam.id === CELTA_ID
+    },
+    away: {
+      name: m.awayTeam.name,
+      shortName: slugify(m.awayTeam.name),
+      isCelta: m.awayTeam.id === CELTA_ID
+    },
+    homeScore: m.score?.fullTime?.home ?? null,
+    awayScore: m.score?.fullTime?.away ?? null,
+    status: m.status === 'FINISHED' ? 'finished' : m.status === 'IN_PLAY' || m.status === 'LIVE' ? 'live' : 'scheduled',
+    date: m.utcDate,
+    venue: m.homeTeam.name,
+    isHome: m.homeTeam.id === CELTA_ID,
+    isCelta
+  };
 }
 
 async function fetchLaLigaData() {
@@ -38,27 +60,31 @@ async function fetchLaLigaData() {
     `${API_BASE}/competitions/${LALIGA_CODE}/matches?dateFrom=${from}&dateTo=${to}`
   );
 
-  const lastMatchday = await getLastFinishedMatchday(data.matches);
-  const nextMatchday = await getNextMatchday(data.matches);
+  const finishedMatches = data.matches.filter(m => m.status === 'FINISHED');
+  const scheduledMatches = data.matches.filter(m => m.status === 'SCHEDULED' || m.status === 'TIMED');
+
+  const lastMatchday = finishedMatches.length > 0 ? finishedMatches[0].matchday : null;
+  const nextMatchday = scheduledMatches.length > 0 ? scheduledMatches[0].matchday : null;
 
   const lastMatches = data.matches.filter(m => m.matchday === lastMatchday);
   const nextMatches = data.matches.filter(m => m.matchday === nextMatchday);
 
-  const celtaId = 564;
   const celtaLastMatch = lastMatches.find(m => 
-    m.homeTeam.id === celtaId || m.awayTeam.id === celtaId
+    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
   );
   const celtaNextMatch = nextMatches.find(m => 
-    m.homeTeam.id === celtaId || m.awayTeam.id === celtaId
+    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
   );
 
   return {
-    lastMatchday,
-    nextMatchday,
-    lastMatches,
-    nextMatches,
-    celtaLastMatch,
-    celtaNextMatch,
+    jornada: lastMatchday,
+    jornadaSiguiente: nextMatchday,
+    partidos: lastMatches.map(formatMatch),
+    proximosPartidos: nextMatches.map(formatMatch),
+    celta: {
+      ultimo: celtaLastMatch ? formatMatch(celtaLastMatch) : null,
+      proximo: celtaNextMatch ? formatMatch(celtaNextMatch) : null
+    },
     fetchedAt: new Date().toISOString()
   };
 }
@@ -69,12 +95,14 @@ exports.handler = async (event, context) => {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data, null, 2)
+      body: JSON.stringify({ success: true, data })
     };
   } catch (error) {
+    console.error('Error fetching LaLiga data:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ success: false, error: error.message })
     };
   }
 };
