@@ -1,3 +1,9 @@
+/* 
+ * Netlify Scheduled Function
+ * Runs every 30 minutes
+ * Schedule: */30 * * * *
+ */
+
 const API_TOKEN = process.env.FOOTBALL_API_TOKEN;
 const API_BASE = 'https://api.football-data.org/v4';
 const LALIGA_CODE = 'PD';
