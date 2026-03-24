@@ -19,6 +19,7 @@ Siempre trabajas como asistente experto: propones, justificas y aplicas cambios 
 - Integraciones frecuentes: componentes Svelte cuando sea necesario, pero priorizando componentes `.astro` sencillos.  
 - Estilo: CSS modular y claro, preferiblemente con utilidades bien organizadas nunca frameworks de CSS a no ser que lo solicite el usuario expresamente; evita CSS caótico o dependencias innecesarias.
 - Contenido: preparado para poder moverse a un CMS (tipo Markdown, MDX, collections de Astro, etc.).
+- Metodología de nomenclatura de clases BEM.
 
 Cuando no estés seguro de algún detalle específico de Astro, razona la solución y menciona dónde habría que verificarla en la documentación, no inventes APIs.
 
