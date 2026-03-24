@@ -3,48 +3,95 @@ import DashboardLayout from '../layouts/DashboardLayout.astro';
 import CeltaHighlight from '../components/CeltaHighlight.astro';
 import MatchList from '../components/MatchList.astro';
 
-const API_URL = import.meta.env.PROD
-  ? '/.netlify/functions/fetch-laliga'
-  : 'http://localhost:9999/.netlify/functions/fetch-laliga';
+const API_TOKEN = import.meta.env.FOOTBALL_API_TOKEN;
+const API_BASE = 'https://api.football-data.org/v4';
+const LALIGA_CODE = 'PD';
+const CELTA_ID = 564;
+
+function slugify(name) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function formatMatch(m) {
+  const isCelta = m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID;
+  return {
+    id: m.id,
+    home: {
+      name: m.homeTeam.name,
+      shortName: slugify(m.homeTeam.name),
+      isCelta: m.homeTeam.id === CELTA_ID
+    },
+    away: {
+      name: m.awayTeam.name,
+      shortName: slugify(m.awayTeam.name),
+      isCelta: m.awayTeam.id === CELTA_ID
+    },
+    homeScore: m.score?.fullTime?.home ?? null,
+    awayScore: m.score?.fullTime?.away ?? null,
+    status: m.status === 'FINISHED' ? 'finished' : m.status === 'IN_PLAY' || m.status === 'LIVE' ? 'live' : 'scheduled',
+    date: m.utcDate,
+    venue: m.homeTeam.name,
+    isHome: m.homeTeam.id === CELTA_ID,
+    isCelta
+  };
+}
 
 let data = null;
 let error = null;
 
 try {
-  const response = await fetch(API_URL);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const result = await response.json();
-  if (result.success) {
-    data = result.data;
-  } else {
-    error = result.error;
-  }
+  const today = new Date();
+  const fromDate = new Date(today);
+  fromDate.setDate(fromDate.getDate() - 14);
+  const toDate = new Date(today);
+  toDate.setDate(toDate.getDate() + 14);
+
+  const from = fromDate.toISOString().split('T')[0];
+  const to = toDate.toISOString().split('T')[0];
+
+  const response = await fetch(
+    `${API_BASE}/competitions/${LALIGA_CODE}/matches?dateFrom=${from}&dateTo=${to}`,
+    { headers: { 'X-Auth-Token': API_TOKEN } }
+  );
+
+  if (!response.ok) throw new Error(`API error: ${response.status}`);
+  
+  const apiData = await response.json();
+
+  const finishedMatches = apiData.matches.filter(m => m.status === 'FINISHED');
+  const scheduledMatches = apiData.matches.filter(m => m.status === 'SCHEDULED' || m.status === 'TIMED');
+
+  const lastMatchday = finishedMatches.length > 0 ? finishedMatches[0].matchday : null;
+  const nextMatchday = scheduledMatches.length > 0 ? scheduledMatches[0].matchday : null;
+
+  const lastMatches = apiData.matches.filter(m => m.matchday === lastMatchday);
+  const nextMatches = apiData.matches.filter(m => m.matchday === nextMatchday);
+
+  const celtaLastMatch = lastMatches.find(m => 
+    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
+  );
+  const celtaNextMatch = nextMatches.find(m => 
+    m.homeTeam.id === CELTA_ID || m.awayTeam.id === CELTA_ID
+  );
+
+  data = {
+    jornada: lastMatchday,
+    jornadaSiguiente: nextMatchday,
+    partidos: lastMatches.map(formatMatch),
+    proximosPartidos: nextMatches.map(formatMatch),
+    celta: {
+      ultimo: celtaLastMatch ? formatMatch(celtaLastMatch) : null,
+      proximo: celtaNextMatch ? formatMatch(celtaNextMatch) : null
+    },
+    fetchedAt: new Date().toISOString()
+  };
 } catch (e) {
   error = e.message;
-}
-
-function formatDate(isoString) {
-  if (!isoString) return '';
-  const date = new Date(isoString);
-  return date.toLocaleDateString('es-ES', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  });
-}
-
-function formatTime(isoString) {
-  if (!isoString) return '';
-  const date = new Date(isoString);
-  return date.toLocaleTimeString('es-ES', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-function getVenue(teamName, isHome) {
-  return isHome ? `Estadio local` : `Como visitante`;
 }
 
 const jornadaActual = data?.jornada?.toString() || '28';
@@ -61,7 +108,7 @@ const jornadaAnterior = data?.partidos?.map(p => ({
   awayScore: p.awayScore,
   status: p.status,
   date: p.date ? new Date(p.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : '',
-  time: p.date ? formatTime(p.date) : ''
+  time: p.date ? new Date(p.date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : ''
 })) || [];
 
 const proximosPartidos = data?.proximosPartidos?.map(p => ({
@@ -72,7 +119,7 @@ const proximosPartidos = data?.proximosPartidos?.map(p => ({
   awayScore: p.awayScore,
   status: p.status,
   date: p.date ? new Date(p.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : '',
-  time: p.date ? formatTime(p.date) : ''
+  time: p.date ? new Date(p.date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : ''
 })) || [];
 
 const lastUpdated = data?.fetchedAt
@@ -110,7 +157,7 @@ const lastUpdated = data?.fetchedAt
           homeScore={celtaUltimo.homeScore}
           awayScore={celtaUltimo.awayScore}
           matchday={jornadaActual}
-          date={formatDate(celtaUltimo.date)}
+          date={celtaUltimo.date ? new Date(celtaUltimo.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ''}
           isHome={celtaUltimo.isHome}
           venue={celtaUltimo.isHome ? 'Estadio de Balaídos' : 'Como visitante'}
         />
@@ -125,8 +172,8 @@ const lastUpdated = data?.fetchedAt
           homeScore={null}
           awayScore={null}
           matchday={(parseInt(jornadaActual) + 1).toString()}
-          date={formatDate(celtaProximo.date)}
-          time={formatTime(celtaProximo.date)}
+          date={celtaProximo.date ? new Date(celtaProximo.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+          time={celtaProximo.date ? new Date(celtaProximo.date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : ''}
           isHome={celtaProximo.isHome}
           venue={celtaProximo.isHome ? 'Estadio de Balaídos' : 'Como visitante'}
         />
