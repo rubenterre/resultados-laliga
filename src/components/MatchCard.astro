@@ -1,0 +1,66 @@
+---
+interface Team {
+  name: string;
+  shortName: string;
+  isCelta?: boolean;
+}
+
+interface Props {
+  home: Team;
+  away: Team;
+  homeScore: number | null;
+  awayScore: number | null;
+  status: "finished" | "live" | "scheduled";
+  matchday?: string;
+  date?: string;
+  time?: string;
+  venue?: string;
+}
+
+const { home, away, homeScore, awayScore, status, matchday, date, time, venue } = Astro.props;
+
+const statusLabels = {
+  finished: "Finalizado",
+  live: "En juego",
+  scheduled: "Programado",
+};
+
+const scoreDisplay = homeScore !== null && awayScore !== null
+  ? `${homeScore} - ${awayScore}`
+  : "vs";
+---
+
+<article class="celta-card" aria-label={`Partido: ${home.name} contra ${away.name}`}>
+  <div class="celta-card__header">
+    <div class="celta-card__title">
+      <span class="celta-card__kicker">{
+        matchday ? `Jornada ${matchday}` : status === "scheduled" ? "Próximo partido" : "Último partido"
+      }</span>
+      <h3 class="celta-card__heading">{home.name} vs {away.name}</h3>
+    </div>
+    {(home.isCelta || away.isCelta) && (
+      <span class="badge-celta">Celta</span>
+    )}
+  </div>
+
+  <div class="celta-card__scoreline">
+    <div class="celta-card__score-main">
+      <span class="celta-card__score">{scoreDisplay}</span>
+      <span class="celta-card__opponent">
+        {home.isCelta ? away.shortName : home.isCelta ? home.shortName : ""}
+      </span>
+    </div>
+    <div class="celta-card__meta">
+      {date && <span>{date}</span>}
+      {time && <span> · {time}</span>}
+    </div>
+  </div>
+
+  <footer class="celta-card__footer">
+    <span class={`match-status match-status--${status}`}>
+      {status === "live" && <span aria-hidden="true">●</span>}
+      {statusLabels[status]}
+    </span>
+    {venue && <span class="tag-pill">{venue}</span>}
+  </footer>
+</article>

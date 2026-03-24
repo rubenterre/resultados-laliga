@@ -1,0 +1,26 @@
+{
+  "name": "resultados-laliga",
+  "version": "1.0.0",
+  "description": "Panel de resultados de partidos de La Liga española",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rubenterre/resultados-laliga.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rubenterre/resultados-laliga/issues"
+  },
+  "homepage": "https://github.com/rubenterre/resultados-laliga#readme",
+  "dependencies": {
+    "astro": "^6.0.8"
+  }
+}

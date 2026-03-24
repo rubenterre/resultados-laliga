@@ -1,0 +1,527 @@
+/* =========================
+   1. Tokens y reset ligero
+   ========================= */
+
+:root {
+  /* Colores identidad RC Celta / dashboard */
+  --color-celta: #8ac3ee;
+  --color-celta-red: #e5254e;
+  --color-celta-gold: #b19221;
+
+  --color-bg-main: #0b1720;
+  --color-bg-panel: #111f2a;
+
+  --color-text-main: #f5f8fc;
+  --color-text-soft: #a7b7c7;
+
+  --color-border-soft: rgba(255, 255, 255, 0.08);
+
+  --color-state-ok: #3ee98b;
+  --color-state-alert: #ff7f5f;
+
+  /* Gradientes */
+  --gradient-page: radial-gradient(circle at top, #14283a 0, #050b10 55%, #020509 100%);
+  --gradient-card-header: linear-gradient(135deg, rgba(138, 195, 238, 0.16), rgba(11, 23, 32, 0.9));
+  --gradient-table-head: linear-gradient(90deg, rgba(138, 195, 238, 0.18), rgba(138, 195, 238, 0.02));
+
+  /* Layout */
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-pill: 999px;
+
+  --shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  --gap-lg: 2rem;
+  --gap-md: 1.25rem;
+  --gap-sm: 0.75rem;
+
+  --transition-fast: 150ms ease-out;
+  --transition-med: 220ms ease-out;
+
+  /* Tipografía */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================
+   2. Body y contenedor base
+   ========================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
+
+html{
+    font-size: 14px;
+    scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--gradient-page);
+}
+
+body, input, button {
+  font-family: var(--font-sans);
+  color: var(--color-text-main);
+}
+
+button {
+ cursor: pointer;
+}
+
+.dashboard-shell {
+  min-height: 100vh;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.dashboard-shell__inner {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+/* Panel principal tipo “glass dashboard” */
+.dashboard-panel {
+  background: rgba(5, 11, 16, 0.9);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-soft);
+  box-shadow: var(--shadow-deep);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 1.5rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-lg);
+}
+
+/* =========================
+   3. Cabecera
+   ========================= */
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap-md);
+}
+
+.dashboard-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+/* Pseudo-escudo / brand badge */
+.brand-badge {
+  width: 32px;
+  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ffffff, var(--color-celta));
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.65),
+    0 10px 20px rgba(0, 0, 0, 0.6);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-badge::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--color-celta-red);
+  box-shadow: 0 0 0 2px rgba(5, 11, 16, 0.9);
+}
+
+/* Marca texto */
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.brand-text__sub {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+
+.brand-text__main {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Metadata / estado */
+.dashboard-header__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: rgba(17, 31, 42, 0.9);
+  border: 1px solid var(--color-border-soft);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+
+.meta-pill__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-state-ok);
+  box-shadow: 0 0 8px rgba(62, 233, 139, 0.75);
+}
+
+.meta-updated {
+  font-size: 0.7rem;
+  color: var(--color-text-soft);
+}
+
+/* =========================
+   4. Layout de contenido principal
+   ========================= */
+
+.dashboard-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+  gap: var(--gap-lg);
+}
+
+@media (max-width: 900px) {
+  .dashboard-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-header__meta {
+    align-items: flex-start;
+  }
+}
+
+/* =========================
+   5. Card destacada RC Celta
+   ========================= */
+
+.celta-card {
+  background: var(--color-bg-panel);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(138, 195, 238, 0.4);
+  box-shadow: var(--shadow-soft);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.celta-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(138, 195, 238, 0.18), transparent 55%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.celta-card__header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+.celta-card__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.celta-card__kicker {
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+
+.celta-card__heading {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.badge-celta {
+  padding: 0.15rem 0.6rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(138, 195, 238, 0.7);
+  background: rgba(138, 195, 238, 0.12);
+  color: var(--color-celta);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.celta-card__scoreline {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.celta-card__score-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+}
+
+.celta-card__score {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-celta);
+  text-shadow: 0 0 20px rgba(138, 195, 238, 0.7);
+}
+
+.celta-card__opponent {
+  font-size: 0.9rem;
+  color: var(--color-text-soft);
+}
+
+.celta-card__meta {
+  font-size: 0.78rem;
+  color: var(--color-text-soft);
+}
+
+.celta-card__footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+}
+
+.tag-pill {
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-soft);
+  background: rgba(5, 11, 16, 0.9);
+  color: var(--color-text-soft);
+}
+
+/* =========================
+   6. Listas de partidos / tablas
+   ========================= */
+
+.block {
+  background: var(--color-bg-panel);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-soft);
+  padding: 1.1rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+.block__header {
+  background: var(--gradient-card-header);
+  border-radius: calc(var(--radius-md) - 4px);
+  padding: 0.6rem 0.8rem;
+  margin: -0.2rem -0.4rem 0.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.block__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.block__subtitle {
+  font-size: 0.75rem;
+  color: var(--color-text-soft);
+}
+
+/* Tabla / lista compacta de partidos */
+
+.match-list {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.match-list thead {
+  background: var(--gradient-table-head);
+}
+
+.match-list th,
+.match-list td {
+  padding: 0.55rem 0.4rem;
+  text-align: left;
+}
+
+.match-list th {
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--color-text-soft);
+}
+
+.match-list tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background-color var(--transition-med), transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.match-list tbody tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.match-list tbody tr:hover {
+  background-color: rgba(138, 195, 238, 0.09);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+/* Columna equipo + estado */
+
+.match-team {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.match-team__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 20%, #ffffff, var(--color-celta));
+  box-shadow: 0 0 12px rgba(138, 195, 238, 0.6);
+  flex-shrink: 0;
+}
+
+.match-team__name {
+  font-weight: 500;
+}
+
+.match-team--celta .match-team__name {
+  color: var(--color-celta);
+  text-shadow: 0 0 18px rgba(138, 195, 238, 0.8);
+}
+
+.match-team--celta .match-team__dot {
+  background: radial-gradient(circle at 30% 20%, #ffffff, var(--color-celta));
+}
+
+/* Estado del partido */
+
+.match-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.match-status--finished {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--color-text-soft);
+}
+
+.match-status--live {
+  background: rgba(62, 233, 139, 0.12);
+  color: var(--color-state-ok);
+  box-shadow: 0 0 12px rgba(62, 233, 139, 0.6);
+}
+
+.match-status--scheduled {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--color-text-soft);
+}
+
+/* Resultado */
+
+.match-score {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+.match-score--celta {
+  color: var(--color-celta);
+}
+
+/* =========================
+   7. Estados y utilidades
+   ========================= */
+
+.text-soft {
+  color: var(--color-text-soft);
+}
+
+.text-alert {
+  color: var(--color-state-alert);
+}
+
+.text-ok {
+  color: var(--color-state-ok);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-soft);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-soft);
+}
+
+/* Estado de error de datos */
+
+.fetch-error {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 127, 95, 0.12);
+  border: 1px solid rgba(255, 127, 95, 0.6);
+  color: var(--color-state-alert);
+  font-size: 0.8rem;
+}

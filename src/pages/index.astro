@@ -1,0 +1,247 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import CeltaHighlight from '../components/CeltaHighlight.astro';
+import MatchList from '../components/MatchList.astro';
+
+const jornadaActual = "28";
+const temporada = "2025-2026";
+
+const ultimoPartidoCelta = {
+  homeTeam: { name: "RC Celta de Vigo", shortName: "CEL" },
+  awayTeam: { name: "CA Osasuna", shortName: "OSA" },
+  homeScore: 2,
+  awayScore: 1,
+  matchday: jornadaActual,
+  date: "Domingo, 23 marzo 2026",
+  venue: "Estadio de Balaídos",
+  isHome: true,
+};
+
+const proximoPartidoCelta = {
+  homeTeam: { name: "Real Betis Balompié", shortName: "BET" },
+  awayTeam: { name: "RC Celta de Vigo", shortName: "CEL" },
+  homeScore: null as number | null,
+  awayScore: null as number | null,
+  matchday: String(parseInt(jornadaActual) + 1),
+  date: "Sábado, 5 abril 2026",
+  time: "18:30",
+  venue: "Estadio Benito Villamarín",
+  isHome: false,
+};
+
+const jornadaAnterior = [
+  {
+    id: "j28-1",
+    home: { name: "RC Celta de Vigo", shortName: "CEL", isCelta: true },
+    away: { name: "CA Osasuna", shortName: "OSA" },
+    homeScore: 2,
+    awayScore: 1,
+    status: "finished" as const,
+    date: "23/03",
+    time: "18:30",
+  },
+  {
+    id: "j28-2",
+    home: { name: "Real Madrid CF", shortName: "RMA" },
+    away: { name: "FC Barcelona", shortName: "BAR" },
+    homeScore: 2,
+    awayScore: 2,
+    status: "finished" as const,
+    date: "23/03",
+    time: "21:00",
+  },
+  {
+    id: "j28-3",
+    home: { name: "Atlético de Madrid", shortName: "ATM" },
+    away: { name: "Sevilla FC", shortName: "SEV" },
+    homeScore: 3,
+    awayScore: 0,
+    status: "finished" as const,
+    date: "22/03",
+    time: "16:15",
+  },
+  {
+    id: "j28-4",
+    home: { name: "Athletic Club", shortName: "ATH" },
+    away: { name: "Real Sociedad", shortName: "RSO" },
+    homeScore: 1,
+    awayScore: 1,
+    status: "finished" as const,
+    date: "22/03",
+    time: "18:30",
+  },
+  {
+    id: "j28-5",
+    home: { name: "Valencia CF", shortName: "VAL" },
+    away: { name: "Girona FC", shortName: "GIR" },
+    homeScore: 0,
+    awayScore: 2,
+    status: "finished" as const,
+    date: "22/03",
+    time: "14:00",
+  },
+  {
+    id: "j28-6",
+    home: { name: "Villarreal CF", shortName: "VIL" },
+    away: { name: "RCD Espanyol", shortName: "ESP" },
+    homeScore: 4,
+    awayScore: 1,
+    status: "finished" as const,
+    date: "21/03",
+    time: "21:00",
+  },
+  {
+    id: "j28-7",
+    home: { name: "UD Las Palmas", shortName: "LPA" },
+    away: { name: "RCD Mallorca", shortName: "MLL" },
+    homeScore: 1,
+    awayScore: 0,
+    status: "finished" as const,
+    date: "21/03",
+    time: "18:30",
+  },
+  {
+    id: "j28-8",
+    home: { name: "Real Sociedad", shortName: "RSO" },
+    away: { name: "Alavés", shortName: "ALA" },
+    homeScore: 2,
+    awayScore: 0,
+    status: "finished" as const,
+    date: "21/03",
+    time: "16:15",
+  },
+  {
+    id: "j28-9",
+    home: { name: "Getafe CF", shortName: "GET" },
+    away: { name: "Real Valladolid", shortName: "VLL" },
+    homeScore: 1,
+    awayScore: 0,
+    status: "finished" as const,
+    date: "21/03",
+    time: "14:00",
+  },
+  {
+    id: "j28-10",
+    home: { name: "RCD Leganés", shortName: "LEG" },
+    away: { name: "CA Osasuna", shortName: "OSA" },
+    homeScore: 2,
+    awayScore: 3,
+    status: "finished" as const,
+    date: "20/03",
+    time: "19:00",
+  },
+];
+
+const proximosPartidos = [
+  {
+    id: "pp-1",
+    home: { name: "Real Betis", shortName: "BET" },
+    away: { name: "RC Celta de Vigo", shortName: "CEL", isCelta: true },
+    homeScore: null,
+    awayScore: null,
+    status: "scheduled" as const,
+    date: "05/04",
+    time: "18:30",
+  },
+  {
+    id: "pp-2",
+    home: { name: "FC Barcelona", shortName: "BAR" },
+    away: { name: "Real Madrid CF", shortName: "RMA" },
+    homeScore: null,
+    awayScore: null,
+    status: "scheduled" as const,
+    date: "05/04",
+    time: "21:00",
+  },
+  {
+    id: "pp-3",
+    home: { name: "Sevilla FC", shortName: "SEV" },
+    away: { name: "Villarreal CF", shortName: "VIL" },
+    homeScore: null,
+    awayScore: null,
+    status: "scheduled" as const,
+    date: "04/04",
+    time: "21:00",
+  },
+  {
+    id: "pp-4",
+    home: { name: "CA Osasuna", shortName: "OSA" },
+    away: { name: "Valencia CF", shortName: "VAL" },
+    homeScore: null,
+    awayScore: null,
+    status: "scheduled" as const,
+    date: "04/04",
+    time: "19:00",
+  },
+  {
+    id: "pp-5",
+    home: { name: "RCD Mallorca", shortName: "MLL" },
+    away: { name: "Girona FC", shortName: "GIR" },
+    homeScore: null,
+    awayScore: null,
+    status: "scheduled" as const,
+    date: "04/04",
+    time: "16:15",
+  },
+];
+---
+
+<DashboardLayout
+  title="RC Celta · Última jornada"
+  subtitle="Dashboard · LaLiga"
+  season={temporada}
+  competition="LALIGA EA SPORTS"
+  lastUpdated="Hace 5 minutos"
+>
+  <div class="dashboard-main">
+    <section aria-labelledby="celta-highlight-heading" class="celta-section">
+      <h2 id="celta-highlight-heading" class="sr-only">RC Celta de Vigo</h2>
+      
+      <CeltaHighlight {...ultimoPartidoCelta} />
+      
+      <CeltaHighlight {...proximoPartidoCelta} />
+    </section>
+
+    <section aria-label="Partidos de LaLiga" class="matches-section">
+      <MatchList
+        matches={jornadaAnterior}
+        title="Última jornada"
+        subtitle="Resultados completos"
+        jornada={`Jornada ${jornadaActual}`}
+      />
+
+      <MatchList
+        matches={proximosPartidos}
+        title="Próxima jornada"
+        subtitle="Partidos programados"
+        jornada={`Jornada ${parseInt(jornadaActual) + 1}`}
+      />
+    </section>
+  </div>
+</DashboardLayout>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .celta-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+  }
+
+  .matches-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+  }
+</style>

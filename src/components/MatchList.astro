@@ -1,0 +1,101 @@
+---
+interface Team {
+  name: string;
+  shortName: string;
+  isCelta?: boolean;
+}
+
+interface Match {
+  id: string;
+  home: Team;
+  away: Team;
+  homeScore: number | null;
+  awayScore: number | null;
+  status: "finished" | "live" | "scheduled";
+  date?: string;
+  time?: string;
+}
+
+interface Props {
+  matches: Match[];
+  title: string;
+  subtitle?: string;
+  jornada: string;
+}
+
+const { matches, title, subtitle, jornada } = Astro.props;
+---
+
+<section class="block" aria-labelledby={`${title.toLowerCase().replace(/\s+/g, '-')}-heading`}>
+  <div class="block__header">
+    <div>
+      <h3 id={`${title.toLowerCase().replace(/\s+/g, '-')}-heading`} class="block__title">
+        {title}
+      </h3>
+      {subtitle && <p class="block__subtitle">{subtitle}</p>}
+    </div>
+    <span class="badge">{jornada}</span>
+  </div>
+
+  <table class="match-list" role="table">
+    <thead>
+      <tr>
+        <th scope="col">Local</th>
+        <th scope="col">Resultado</th>
+        <th scope="col">Visitante</th>
+        <th scope="col">Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {matches.map((match) => (
+        <tr data-match-id={match.id}>
+          <td>
+            <div class={`match-team ${match.home.isCelta ? "match-team--celta" : ""}`}>
+              <span class="match-team__dot" aria-hidden="true"></span>
+              <span class="match-team__name">
+                {match.home.name}
+                {match.home.isCelta && <span class="sr-only">(RC Celta)</span>}
+              </span>
+            </div>
+          </td>
+          <td>
+            <span class={`match-score ${match.home.isCelta || match.away.isCelta ? "match-score--celta" : ""}`}>
+              {match.homeScore !== null && match.awayScore !== null
+                ? `${match.homeScore} - ${match.awayScore}`
+                : "vs"}
+            </span>
+          </td>
+          <td>
+            <div class={`match-team ${match.away.isCelta ? "match-team--celta" : ""}`}>
+              <span class="match-team__dot" aria-hidden="true"></span>
+              <span class="match-team__name">
+                {match.away.name}
+                {match.away.isCelta && <span class="sr-only">(RC Celta)</span>}
+              </span>
+            </div>
+          </td>
+          <td>
+            <span class={`match-status match-status--${match.status}`}>
+              {match.status === "live" && <span aria-hidden="true">●</span>}
+              {match.status === "finished" ? "Finalizado" : match.status === "live" ? "En juego" : "Programado"}
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
