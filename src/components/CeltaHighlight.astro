@@ -178,4 +178,34 @@ const isFinished = homeScore !== null && awayScore !== null;
     justify-content: space-between;
     flex-direction: row-reverse;
   }
+
+  @media (max-width: 405px) {
+    .celta-match {
+      gap: 0.75rem;
+    }
+
+    .celta-match__team {
+      width: 90px;
+    }
+
+    .celta-match__logo {
+      width: 56px;
+      height: 56px;
+      padding: 2px;
+    }
+
+    .celta-match__name {
+      font-size: 0.65rem;
+      max-width: 80px;
+    }
+
+    .celta-match__number {
+      font-size: 1.3rem;
+    }
+
+    .celta-match__divider,
+    .celta-match__vs {
+      font-size: 1rem;
+    }
+  }
 </style>
