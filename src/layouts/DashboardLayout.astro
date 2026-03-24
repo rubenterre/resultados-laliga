@@ -38,9 +38,13 @@ const {
         <div class="dashboard-panel">
           <header class="dashboard-header">
             <div class="dashboard-header__left">
-              <div class="brand-badge" aria-label="Escudo RC Celta">
-                <span class="sr-only">RC Celta de Vigo</span>
-              </div>
+              <img
+                src="/laliga-logo.svg"
+                alt="LaLiga"
+                width="48"
+                height="48"
+                class="brand-logo"
+              />
               <div class="brand-text">
                 <span class="brand-text__sub">{subtitle}</span>
                 <span class="brand-text__main">{title}</span>
@@ -78,5 +82,12 @@ const {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 8px;
   }
 </style>

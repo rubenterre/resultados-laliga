@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/rubenterre/resultados-laliga#readme",
   "dependencies": {
+    "@astrojs/netlify": "^7.0.4",
     "astro": "^6.0.8"
   }
 }

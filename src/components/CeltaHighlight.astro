@@ -29,9 +29,7 @@ const {
 } = Astro.props;
 
 const opponent = isHome ? awayTeam : homeTeam;
-const scoreDisplay = homeScore !== null && awayScore !== null
-  ? `${homeScore} - ${awayScore}`
-  : "vs";
+const isFinished = homeScore !== null && awayScore !== null;
 ---
 
 <article class="celta-card celta-card--highlight" aria-label={`RC Celta: ${homeTeam.name} ${homeScore ?? "-"} - ${awayScore ?? "-"} ${awayTeam.name}`}>
@@ -39,17 +37,49 @@ const scoreDisplay = homeScore !== null && awayScore !== null
     <div class="celta-card__title">
       <span class="celta-card__kicker">RC Celta de Vigo · Jornada {matchday}</span>
       <h2 class="celta-card__heading">
-        {homeTeam.name} {isHome ? "(Local)" : "(Visitante)"}
+        {isFinished ? "Último resultado" : "Próximo partido"}
       </h2>
     </div>
     <span class="badge-celta">Celta</span>
   </div>
 
   <div class="celta-card__scoreline">
-    <div class="celta-card__score-main">
-      <span class="celta-card__score">{scoreDisplay}</span>
-      <span class="celta-card__opponent">vs {opponent.shortName}</span>
+    <div class="celta-match">
+      <div class={`celta-match__team ${isHome ? "celta-match__team--home" : "celta-match__team--away"}`}>
+        <img
+          src={`/logos/${homeTeam.shortName.toLowerCase()}.svg`}
+          alt={homeTeam.name}
+          width="48"
+          height="48"
+          class="celta-match__logo"
+        />
+        <span class="celta-match__name">{homeTeam.shortName}</span>
+      </div>
+
+      <div class="celta-match__score">
+        {isFinished ? (
+          <>
+            <span class={`celta-match__number ${homeTeam.shortName === "CEL" ? "celta-match__number--celta" : ""}`}>{homeScore}</span>
+            <span class="celta-match__divider">-</span>
+            <span class={`celta-match__number ${awayTeam.shortName === "CEL" ? "celta-match__number--celta" : ""}`}>{awayScore}</span>
+          </>
+        ) : (
+          <span class="celta-match__vs">vs</span>
+        )}
+      </div>
+
+      <div class={`celta-match__team ${!isHome ? "celta-match__team--home" : "celta-match__team--away"}`}>
+        <img
+          src={`/logos/${awayTeam.shortName.toLowerCase()}.svg`}
+          alt={awayTeam.name}
+          width="48"
+          height="48"
+          class="celta-match__logo"
+        />
+        <span class="celta-match__name">{awayTeam.shortName}</span>
+      </div>
     </div>
+
     <div class="celta-card__meta">
       <time datetime={date}>{date}</time>
       {time && <span> · {time}</span>}
@@ -58,10 +88,88 @@ const scoreDisplay = homeScore !== null && awayScore !== null
 
   <footer class="celta-card__footer">
     <span class="tag-pill">{venue}</span>
-    {homeScore !== null && awayScore !== null ? (
+    {isFinished ? (
       <span class="match-status match-status--finished">Finalizado</span>
     ) : (
       <span class="match-status match-status--scheduled">Próximo</span>
     )}
   </footer>
 </article>
+
+<style>
+  .celta-match {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .celta-match__team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .celta-match__logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px;
+  }
+
+  .celta-match__team--home {
+    order: 1;
+  }
+
+  .celta-match__team--away {
+    order: 3;
+  }
+
+  .celta-match__name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-soft);
+    letter-spacing: 0.08em;
+  }
+
+  .celta-match__score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    order: 2;
+  }
+
+  .celta-match__number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+  }
+
+  .celta-match__number--celta {
+    color: var(--color-celta);
+    text-shadow: 0 0 20px rgba(138, 195, 238, 0.7);
+  }
+
+  .celta-match__divider {
+    font-size: 1.4rem;
+    color: var(--color-text-soft);
+  }
+
+  .celta-match__vs {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--color-text-soft);
+  }
+
+  .celta-card__meta {
+    text-align: center;
+  }
+
+  .celta-card__footer {
+    justify-content: space-between;
+    flex-direction: row-reverse;
+  }
+</style>

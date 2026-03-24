@@ -3,187 +3,87 @@ import DashboardLayout from '../layouts/DashboardLayout.astro';
 import CeltaHighlight from '../components/CeltaHighlight.astro';
 import MatchList from '../components/MatchList.astro';
 
-const jornadaActual = "28";
-const temporada = "2025-2026";
+const API_URL = import.meta.env.PROD
+  ? '/.netlify/functions/fetch-laliga'
+  : 'http://localhost:9999/.netlify/functions/fetch-laliga';
 
-const ultimoPartidoCelta = {
-  homeTeam: { name: "RC Celta de Vigo", shortName: "CEL" },
-  awayTeam: { name: "CA Osasuna", shortName: "OSA" },
-  homeScore: 2,
-  awayScore: 1,
-  matchday: jornadaActual,
-  date: "Domingo, 23 marzo 2026",
-  venue: "Estadio de Balaídos",
-  isHome: true,
-};
+let data = null;
+let error = null;
 
-const proximoPartidoCelta = {
-  homeTeam: { name: "Real Betis Balompié", shortName: "BET" },
-  awayTeam: { name: "RC Celta de Vigo", shortName: "CEL" },
-  homeScore: null as number | null,
-  awayScore: null as number | null,
-  matchday: String(parseInt(jornadaActual) + 1),
-  date: "Sábado, 5 abril 2026",
-  time: "18:30",
-  venue: "Estadio Benito Villamarín",
-  isHome: false,
-};
+try {
+  const response = await fetch(API_URL);
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const result = await response.json();
+  if (result.success) {
+    data = result.data;
+  } else {
+    error = result.error;
+  }
+} catch (e) {
+  error = e.message;
+}
 
-const jornadaAnterior = [
-  {
-    id: "j28-1",
-    home: { name: "RC Celta de Vigo", shortName: "CEL", isCelta: true },
-    away: { name: "CA Osasuna", shortName: "OSA" },
-    homeScore: 2,
-    awayScore: 1,
-    status: "finished" as const,
-    date: "23/03",
-    time: "18:30",
-  },
-  {
-    id: "j28-2",
-    home: { name: "Real Madrid CF", shortName: "RMA" },
-    away: { name: "FC Barcelona", shortName: "BAR" },
-    homeScore: 2,
-    awayScore: 2,
-    status: "finished" as const,
-    date: "23/03",
-    time: "21:00",
-  },
-  {
-    id: "j28-3",
-    home: { name: "Atlético de Madrid", shortName: "ATM" },
-    away: { name: "Sevilla FC", shortName: "SEV" },
-    homeScore: 3,
-    awayScore: 0,
-    status: "finished" as const,
-    date: "22/03",
-    time: "16:15",
-  },
-  {
-    id: "j28-4",
-    home: { name: "Athletic Club", shortName: "ATH" },
-    away: { name: "Real Sociedad", shortName: "RSO" },
-    homeScore: 1,
-    awayScore: 1,
-    status: "finished" as const,
-    date: "22/03",
-    time: "18:30",
-  },
-  {
-    id: "j28-5",
-    home: { name: "Valencia CF", shortName: "VAL" },
-    away: { name: "Girona FC", shortName: "GIR" },
-    homeScore: 0,
-    awayScore: 2,
-    status: "finished" as const,
-    date: "22/03",
-    time: "14:00",
-  },
-  {
-    id: "j28-6",
-    home: { name: "Villarreal CF", shortName: "VIL" },
-    away: { name: "RCD Espanyol", shortName: "ESP" },
-    homeScore: 4,
-    awayScore: 1,
-    status: "finished" as const,
-    date: "21/03",
-    time: "21:00",
-  },
-  {
-    id: "j28-7",
-    home: { name: "UD Las Palmas", shortName: "LPA" },
-    away: { name: "RCD Mallorca", shortName: "MLL" },
-    homeScore: 1,
-    awayScore: 0,
-    status: "finished" as const,
-    date: "21/03",
-    time: "18:30",
-  },
-  {
-    id: "j28-8",
-    home: { name: "Real Sociedad", shortName: "RSO" },
-    away: { name: "Alavés", shortName: "ALA" },
-    homeScore: 2,
-    awayScore: 0,
-    status: "finished" as const,
-    date: "21/03",
-    time: "16:15",
-  },
-  {
-    id: "j28-9",
-    home: { name: "Getafe CF", shortName: "GET" },
-    away: { name: "Real Valladolid", shortName: "VLL" },
-    homeScore: 1,
-    awayScore: 0,
-    status: "finished" as const,
-    date: "21/03",
-    time: "14:00",
-  },
-  {
-    id: "j28-10",
-    home: { name: "RCD Leganés", shortName: "LEG" },
-    away: { name: "CA Osasuna", shortName: "OSA" },
-    homeScore: 2,
-    awayScore: 3,
-    status: "finished" as const,
-    date: "20/03",
-    time: "19:00",
-  },
-];
+function formatDate(isoString) {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  return date.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
 
-const proximosPartidos = [
-  {
-    id: "pp-1",
-    home: { name: "Real Betis", shortName: "BET" },
-    away: { name: "RC Celta de Vigo", shortName: "CEL", isCelta: true },
-    homeScore: null,
-    awayScore: null,
-    status: "scheduled" as const,
-    date: "05/04",
-    time: "18:30",
-  },
-  {
-    id: "pp-2",
-    home: { name: "FC Barcelona", shortName: "BAR" },
-    away: { name: "Real Madrid CF", shortName: "RMA" },
-    homeScore: null,
-    awayScore: null,
-    status: "scheduled" as const,
-    date: "05/04",
-    time: "21:00",
-  },
-  {
-    id: "pp-3",
-    home: { name: "Sevilla FC", shortName: "SEV" },
-    away: { name: "Villarreal CF", shortName: "VIL" },
-    homeScore: null,
-    awayScore: null,
-    status: "scheduled" as const,
-    date: "04/04",
-    time: "21:00",
-  },
-  {
-    id: "pp-4",
-    home: { name: "CA Osasuna", shortName: "OSA" },
-    away: { name: "Valencia CF", shortName: "VAL" },
-    homeScore: null,
-    awayScore: null,
-    status: "scheduled" as const,
-    date: "04/04",
-    time: "19:00",
-  },
-  {
-    id: "pp-5",
-    home: { name: "RCD Mallorca", shortName: "MLL" },
-    away: { name: "Girona FC", shortName: "GIR" },
-    homeScore: null,
-    awayScore: null,
-    status: "scheduled" as const,
-    date: "04/04",
-    time: "16:15",
-  },
-];
+function formatTime(isoString) {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  return date.toLocaleTimeString('es-ES', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function getVenue(teamName, isHome) {
+  return isHome ? `Estadio local` : `Como visitante`;
+}
+
+const jornadaActual = data?.jornada?.toString() || '28';
+const temporada = '2025-2026';
+
+const celtaUltimo = data?.celta?.ultimo;
+const celtaProximo = data?.celta?.proximo;
+
+const jornadaAnterior = data?.partidos?.map(p => ({
+  id: p.id.toString(),
+  home: { name: p.home.name, shortName: p.home.shortName, isCelta: p.home.isCelta },
+  away: { name: p.away.name, shortName: p.away.shortName, isCelta: p.away.isCelta },
+  homeScore: p.homeScore,
+  awayScore: p.awayScore,
+  status: p.status,
+  date: p.date ? new Date(p.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : '',
+  time: p.date ? formatTime(p.date) : ''
+})) || [];
+
+const proximosPartidos = data?.proximosPartidos?.map(p => ({
+  id: p.id.toString(),
+  home: { name: p.home.name, shortName: p.home.shortName, isCelta: p.home.isCelta },
+  away: { name: p.away.name, shortName: p.away.shortName, isCelta: p.away.isCelta },
+  homeScore: p.homeScore,
+  awayScore: p.awayScore,
+  status: p.status,
+  date: p.date ? new Date(p.date).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : '',
+  time: p.date ? formatTime(p.date) : ''
+})) || [];
+
+const lastUpdated = data?.fetchedAt
+  ? new Date(data.fetchedAt).toLocaleString('es-ES', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  : 'Ahora mismo';
 ---
 
 <DashboardLayout
@@ -191,31 +91,72 @@ const proximosPartidos = [
   subtitle="Dashboard · LaLiga"
   season={temporada}
   competition="LALIGA EA SPORTS"
-  lastUpdated="Hace 5 minutos"
+  lastUpdated={lastUpdated}
 >
+  {error && (
+    <div class="fetch-error" role="alert">
+      Error al cargar datos: {error}
+    </div>
+  )}
+
   <div class="dashboard-main">
     <section aria-labelledby="celta-highlight-heading" class="celta-section">
       <h2 id="celta-highlight-heading" class="sr-only">RC Celta de Vigo</h2>
-      
-      <CeltaHighlight {...ultimoPartidoCelta} />
-      
-      <CeltaHighlight {...proximoPartidoCelta} />
+
+      {celtaUltimo ? (
+        <CeltaHighlight
+          homeTeam={{ name: celtaUltimo.home.name, shortName: celtaUltimo.home.shortName }}
+          awayTeam={{ name: celtaUltimo.away.name, shortName: celtaUltimo.away.shortName }}
+          homeScore={celtaUltimo.homeScore}
+          awayScore={celtaUltimo.awayScore}
+          matchday={jornadaActual}
+          date={formatDate(celtaUltimo.date)}
+          isHome={celtaUltimo.isHome}
+          venue={celtaUltimo.isHome ? 'Estadio de Balaídos' : 'Como visitante'}
+        />
+      ) : (
+        <div class="fetch-error">No hay datos del último partido del Celta</div>
+      )}
+
+      {celtaProximo ? (
+        <CeltaHighlight
+          homeTeam={{ name: celtaProximo.home.name, shortName: celtaProximo.home.shortName }}
+          awayTeam={{ name: celtaProximo.away.name, shortName: celtaProximo.away.shortName }}
+          homeScore={null}
+          awayScore={null}
+          matchday={(parseInt(jornadaActual) + 1).toString()}
+          date={formatDate(celtaProximo.date)}
+          time={formatTime(celtaProximo.date)}
+          isHome={celtaProximo.isHome}
+          venue={celtaProximo.isHome ? 'Estadio de Balaídos' : 'Como visitante'}
+        />
+      ) : (
+        <div class="fetch-error">No hay datos del próximo partido del Celta</div>
+      )}
     </section>
 
     <section aria-label="Partidos de LaLiga" class="matches-section">
-      <MatchList
-        matches={jornadaAnterior}
-        title="Última jornada"
-        subtitle="Resultados completos"
-        jornada={`Jornada ${jornadaActual}`}
-      />
+      {jornadaAnterior.length > 0 ? (
+        <MatchList
+          matches={jornadaAnterior}
+          title="Última jornada"
+          subtitle="Resultados completos"
+          jornada={`Jornada ${jornadaActual}`}
+        />
+      ) : (
+        <div class="fetch-error">No hay partidos de la última jornada</div>
+      )}
 
-      <MatchList
-        matches={proximosPartidos}
-        title="Próxima jornada"
-        subtitle="Partidos programados"
-        jornada={`Jornada ${parseInt(jornadaActual) + 1}`}
-      />
+      {proximosPartidos.length > 0 ? (
+        <MatchList
+          matches={proximosPartidos}
+          title="Próxima jornada"
+          subtitle="Partidos programados"
+          jornada={`Jornada ${parseInt(jornadaActual) + 1}`}
+        />
+      ) : (
+        <div class="fetch-error">No hay partidos programados</div>
+      )}
     </section>
   </div>
 </DashboardLayout>
@@ -243,5 +184,15 @@ const proximosPartidos = [
     display: flex;
     flex-direction: column;
     gap: var(--gap-lg);
+  }
+
+  .fetch-error {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius-md);
+    background: rgba(255, 127, 95, 0.12);
+    border: 1px solid rgba(255, 127, 95, 0.6);
+    color: var(--color-state-alert);
+    font-size: 0.8rem;
   }
 </style>
