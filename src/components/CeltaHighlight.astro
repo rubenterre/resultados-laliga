@@ -45,7 +45,7 @@ const isFinished = homeScore !== null && awayScore !== null;
 
   <div class="celta-card__scoreline">
     <div class="celta-match">
-      <div class={`celta-match__team ${isHome ? "celta-match__team--home" : "celta-match__team--away"}`}>
+      <div class="celta-match__team celta-match__team--away">
         <img
           src={`/logos/${homeTeam.shortName.toLowerCase()}.png`}
           alt={homeTeam.name}
@@ -68,7 +68,7 @@ const isFinished = homeScore !== null && awayScore !== null;
         )}
       </div>
 
-      <div class={`celta-match__team ${!isHome ? "celta-match__team--home" : "celta-match__team--away"}`}>
+      <div class="celta-match__team celta-match__team--home">
         <img
           src={`/logos/${awayTeam.shortName.toLowerCase()}.png`}
           alt={awayTeam.name}
