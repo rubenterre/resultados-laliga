@@ -20,6 +20,7 @@ function slugify(name) {
 function getTeamLogo(teamName) {
   const name = teamName.toLowerCase();
   if (name.includes('celta')) return 'celta';
+  if (name.includes('espanyol')) return 'espanyol';
   if (name.includes('barcelona') || name.includes('fc barcelona')) return 'barcelona';
   if (name.includes('real madrid')) return 'real-madrid';
   if (name.includes('atlético') || name.includes('atletico')) return 'atletico';
@@ -32,7 +33,6 @@ function getTeamLogo(teamName) {
   if (name.includes('osasuna')) return 'osasuna';
   if (name.includes('rayo')) return 'rayo';
   if (name.includes('alavés') || name.includes('alaves')) return 'alaves';
-  if (name.includes('espanyol')) return 'espanyol';
   if (name.includes('elche')) return 'elche';
   if (name.includes('getafe')) return 'getafe';
   if (name.includes('mallorca')) return 'mallorca';
